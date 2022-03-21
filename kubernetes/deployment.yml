@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2022-03-21 - 11:42:44 +0000
+  labels:
+    app.kubernetes.io/name: jitexecutor-bpmn-tester
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: jitexecutor-bpmn-tester
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: jitexecutor-bpmn-tester
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/build-timestamp: 2022-03-18 - 17:30:46 +0000
+  labels:
+    app.kubernetes.io/version: 1.0-SNAPSHOT
+    app.kubernetes.io/name: jitexecutor-bpmn-tester
+  name: jitexecutor-bpmn-tester
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/version: 1.0-SNAPSHOT
+      app.kubernetes.io/name: jitexecutor-bpmn-tester
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/build-timestamp: 2022-03-18 - 17:30:46 +0000
+      labels:
+        app.kubernetes.io/version: 1.0-SNAPSHOT
+        app.kubernetes.io/name: jitexecutor-bpmn-tester
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "my-cluster-kafka-bootstrap:9092"
+          image: quay.io/dsalerno/jitexecutor-bpmn-tester:1.0.0-SNAPSHOT
+          imagePullPolicy: IfNotPresent
+          name: jitexecutor-bpmn-tester
